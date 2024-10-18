@@ -1,4 +1,5 @@
 ### 23H2 Update Silent 
+### UPDATED ON : OCTOBER 18 2024
 
 # Set proceed flag to false by default
 $proceed = $false
@@ -33,9 +34,9 @@ if ($proceed -eq $true) {
         # Import the PSWindowsUpdate module
         Import-Module PSWindowsUpdate
 
-        # Configure Windows Update to search for feature updates and install
+        # Search for all available updates and filter for the Windows 11 23H2 feature update
         Write-Output "Searching for Windows 11 23H2 upgrade..."
-        Get-WindowsUpdate -Criteria "IsInstalled=0 AND Type='Feature'" -AcceptAll -Install -AutoReboot -Verbose
+        Get-WindowsUpdate -Install -AcceptAll -Verbose
     }
     catch {
         Write-Output "Error occurred while upgrading via Windows Update: $_"
