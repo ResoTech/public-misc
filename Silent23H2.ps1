@@ -5,11 +5,11 @@
 
 $proceed=$false
 $osversion = Get-WMIObject win32_operatingsystem
-$osbuild = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion
+$osbuild = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild
 if($osversion.caption -like "*Windows 10*" -or $osversion.caption -like "*Windows 11*")
 {
     "Windows 10 or Windows 11 detected"
-    if($osbuild -eq "21H2" -or $osbuild -eq "2004" -or $osbuild -eq "22H1" -or $osbuild -eq "20H2"  -or $osbuild -eq "21H1" -or $osbuild -eq "22H2")
+    if($osbuild -ge 19041)
     {
         "Build of Windows is compatible"
 
