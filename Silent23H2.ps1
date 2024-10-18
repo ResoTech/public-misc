@@ -6,10 +6,10 @@
 $proceed=$false
 $osversion = Get-WMIObject win32_operatingsystem
 $osbuild = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion
-if($osversion.caption -like "*Windows 10*")
+if($osversion.caption -like "*Windows 10*" -or $osversion.caption -like "*Windows 11*")
 {
-    "Windows 10 detected"
-    if($osbuild -eq "21H2" -or $osbuild -eq "2004" -or $osbuild -eq "22H1" -or $osbuild -eq "20H2"  -or $osbuild -eq "21H1")
+    "Windows 10 or Windows 11 detected"
+    if($osbuild -eq "21H2" -or $osbuild -eq "2004" -or $osbuild -eq "22H1" -or $osbuild -eq "20H2"  -or $osbuild -eq "21H1" -or $osbuild -eq "22H2")
     {
         "Build of Windows is compatible"
 
@@ -19,7 +19,7 @@ if($osversion.caption -like "*Windows 10*")
         $searchresult.Updates | ft 
         For ($i=0; $i -lt $searchresult.Updates.Count; $i++) {
             $update = $searchResult.Updates.Item($i)
-            if($update.isinstalled -eq "True" -and $update.title.contains("Cumulative Update for Windows 10"))
+            if($update.isinstalled -eq "True" -and ($update.title.contains("Cumulative Update for Windows 10") -or $update.title.contains("Cumulative Update for Windows 11")))
             {
                 "found the required minimum cumulative update so all good - " + $update.title
                 $proceed = $true
@@ -38,7 +38,7 @@ if($osversion.caption -like "*Windows 10*")
 }
 else 
 {
-    "Windows 10 not detected"
+    "Windows 10 or Windows 11 not detected"
     $proceed=$False
 }
 
