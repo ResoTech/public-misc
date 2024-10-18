@@ -56,16 +56,28 @@ if($proceed -eq $true)
     {
         "64 bit Windows detected"
         $WebClient = New-Object System.Net.WebClient
-        $WebClient.DownloadFile("http://b1.download.windowsupdate.com/c/upgr/2023/10/windows10.0-kb5015684-x64_23H2.cab","C:\temp\windows10.0-kb5015684-x64_23H2.cab")
-        $updaterunArguments = '/online /Add-Package /PackagePath:"c:\temp\windows10.0-kb5015684-x64_23H2.cab" /quiet /norestart'
+        $updateUrl = "https://catalog.s.download.windowsupdate.com/d/msdownload/update/software/updt/2023/10/windows10.0-kb5028185-x64_23h2.cab"
+        $updateFilePath = "C:\temp\windows10.0-kb5028185-x64_23H2.cab"
     }
     else 
     {
         "32 bit Windows detected"
         $WebClient = New-Object System.Net.WebClient
-        $WebClient.DownloadFile("http://b1.download.windowsupdate.com/c/upgr/2023/10/windows10.0-kb5015684-x86_23H2.cab","C:\temp\windows10.0-kb5015684-x86_23H2.cab")
-        $updaterunArguments = '/online /Add-Package /PackagePath:"C:\temp\windows10.0-kb5015684-x86_23H2.cab" /quiet /norestart'
+        $updateUrl = "https://catalog.s.download.windowsupdate.com/d/msdownload/update/software/updt/2023/10/windows10.0-kb5028185-x86_23h2.cab"
+        $updateFilePath = "C:\temp\windows10.0-kb5028185-x86_23H2.cab"
     }
+
+    try
+    {
+        $WebClient.DownloadFile($updateUrl, $updateFilePath)
+    }
+    catch
+    {
+        "Error downloading the update file: $_"
+        exit 1
+    }
+    
+    $updaterunArguments = "/online /Add-Package /PackagePath:`"$updateFilePath`" /quiet /norestart"
     
     $updaterunProcessCfg = New-Object System.Diagnostics.ProcessStartInfo
     $updaterunProcessCfg.FileName = 'C:\Windows\system32\dism.exe'
