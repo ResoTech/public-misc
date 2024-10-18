@@ -13,23 +13,24 @@ if($osversion.caption -like "*Windows 11*")
     # Check if the system is on version 23H2
     if($osbuild -ne "23H2")
     {
-        "System is not on Windows 11 23H2. Proceeding with update."
+        "System is not on Windows 11 23H2. Proceeding with enablement package."
         $proceed = $true
     }
     else
     {
         "System is already on Windows 11 23H2. No update needed."
+        exit 0
     }
 }
 else 
 {
-    "Windows 11 not detected. No action taken."
-    $proceed=$False
+    "Windows 11 not detected. Exiting script."
+    exit 1
 }
 
 if($proceed -eq $true)
 {
-    "Downloading the update file"
+    "Downloading the enablement package file (KB5027397)"
     $folderpresent = test-path c:\temp
     if($folderpresent -eq $False)
     {
@@ -41,8 +42,8 @@ if($proceed -eq $true)
     {
         "64-bit Windows detected"
         $WebClient = New-Object System.Net.WebClient
-        $WebClient.DownloadFile("https://catalog.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/e3472ba5-22b6-46d5-8de2-db78395b3209/public/windows11.0-kb5031455-x64_d1c3bafaa9abd8c65f0354e2ea89f35470b10b65.msu", "C:\temp\windows11.0-kb5031455-x64_23H2.msu")
-        $updaterunArguments = '/online /Add-Package /PackagePath:"C:\temp\windows11.0-kb5031455-x64_23H2.msu" /quiet /norestart'
+        $WebClient.DownloadFile("https://catalog.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/955D24B7A533F830940F5163371DE45FF349F8D9/windows11.0-kb5027397-x64.cab", "C:\temp\windows11.0-kb5027397-x64_23H2.cab")
+        $updaterunArguments = '/online /Add-Package /PackagePath:"C:\temp\windows11.0-kb5027397-x64_23H2.cab" /quiet /norestart'
     }
     else 
     {
@@ -64,7 +65,18 @@ if($proceed -eq $true)
     $updaterunProcessErrors = $updaterunProcess.StandardError.ReadToEnd()
     $updaterunProcessExitCode = $updaterunProcess.ExitCode
 
+    # Output results
     "Execution Output : " + $updaterunProcessOutput
     "Execution Errors : " + $updaterunProcessErrors
     "Execution Exit Code : " + $updaterunProcessExitCode
+
+    # Check if the process succeeded
+    if ($updaterunProcessExitCode -eq 0)
+    {
+        "Successfully updated to Windows 11 23H2 using the KB5027397 enablement package."
+    }
+    else
+    {
+        "Update to 23H2 failed. Please check errors above."
+    }
 }
