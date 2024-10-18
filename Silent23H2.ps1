@@ -1,85 +1,46 @@
 ### 23H2 Update Silent 
 
-$proceed=$false
+# Set proceed flag to false by default
+$proceed = $false
+
+# Check Windows version and build compatibility
 $osversion = Get-WMIObject win32_operatingsystem
 $osbuild = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild
-if($osversion.caption -like "*Windows 10*" -or $osversion.caption -like "*Windows 11*")
-{
-    "Windows 10 or Windows 11 detected"
-    if($osbuild -ge 19041)
-    {
-        "Build of Windows is compatible"
 
+if ($osversion.caption -like "*Windows 10*" -or $osversion.caption -like "*Windows 11*") {
+    Write-Output "Windows 10 or Windows 11 detected"
+    
+    if ($osbuild -ge 19041) {
+        Write-Output "Build of Windows is compatible"
         $proceed = $true
+    } else {
+        Write-Output "Build of Windows is not compatible"
     }
-    else
-    {
-        "Build of Windows is not compatible"
-        $proceed = $False
-    }
-}
-else 
-{
-    "Windows 10 or Windows 11 not detected"
-    $proceed=$False
+} else {
+    Write-Output "Windows 10 or Windows 11 not detected"
 }
 
-if($proceed -eq $true)
-{
-    "Downloading the update file"
-    $folderpresent = test-path c:\temp
-    if($folderpresent -eq $False)
-    {
-        "Folder c:\temp didnt exist, creating it"
-        md c:\temp >> $null
-    }
+# Proceed if OS build is compatible
+if ($proceed -eq $true) {
+    Write-Output "Initiating Windows 11 23H2 upgrade via Windows Update"
 
-    if([Environment]::Is64BitOperatingSystem -eq "True")
-    {
-        "64 bit Windows detected"
-        $WebClient = New-Object System.Net.WebClient
-        $updateUrl = "https://catalog.s.download.windowsupdate.com/d/msdownload/update/software/updt/2023/10/windows11.0-kb5031455-x64_23h2.msu"
-        $updateFilePath = "C:\temp\windows11.0-kb5031455-x64_23H2.msu"
+    try {
+        # Install the PSWindowsUpdate module if not already installed
+        if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
+            Install-Module -Name PSWindowsUpdate -Force -SkipPublisherCheck
+        }
+
+        # Import the PSWindowsUpdate module
+        Import-Module PSWindowsUpdate
+
+        # Configure Windows Update to search for feature updates and install
+        Write-Output "Searching for Windows 11 23H2 upgrade..."
+        Get-WindowsUpdate -Criteria "IsInstalled=0 AND Type='Feature'" -AcceptAll -Install -AutoReboot -Verbose
     }
-    else 
-    {
-        "32 bit Windows detected"
-        "Error: Windows 11 23H2 is not supported for 32-bit systems."
+    catch {
+        Write-Output "Error occurred while upgrading via Windows Update: $_"
         exit 1
     }
-
-    try
-    {
-        $WebClient.DownloadFile($updateUrl, $updateFilePath)
-    }
-    catch
-    {
-        "Error downloading the update file: $_"
-        exit 1
-    }
-    
-    "Installing the update file"
-    $installerArguments = "/quiet /norestart"
-    
-    $installerProcessCfg = New-Object System.Diagnostics.ProcessStartInfo
-    $installerProcessCfg.FileName = 'wusa.exe'
-    $installerProcessCfg.RedirectStandardError = $true
-    $installerProcessCfg.RedirectStandardOutput = $true
-    $installerProcessCfg.UseShellExecute = $false
-    $installerProcessCfg.Arguments = "$updateFilePath $installerArguments"
-    $installerProcess = New-Object System.Diagnostics.Process
-    $installerProcess.StartInfo = $installerProcessCfg
-    $installerProcess.Start() | Out-Null
-    $installerProcess.WaitForExit()
-    $installerProcessOutput = $installerProcess.StandardOutput.ReadToEnd()
-    $installerProcessErrors = $installerProcess.StandardError.ReadToEnd()
-    $installerProcessExitCode = $installerProcess.ExitCode
-
-    "Execution Output : " + $installerProcessOutput
-    "Execution Errors : " + $installerProcessErrors
-    "Execution Exit Code : " + $installerProcessExitCode
-}
-else
-{
-    "Upgrade process cannot proceed due to incompatible build or unsupported OS."
+} else {
+    Write-Output "Upgrade process cannot proceed due to incompatible build or unsupported OS."
 }
