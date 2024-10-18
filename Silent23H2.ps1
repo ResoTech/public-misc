@@ -1,4 +1,6 @@
 ### WINDOWS 11 23H2 Silent Upgrade
+### UPDATED ON : OCTOBER 18 2024
+
 $proceed=$false
 $osversion = Get-WMIObject win32_operatingsystem
 $osbuild = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion
@@ -39,15 +41,13 @@ if($proceed -eq $true)
     {
         "64-bit Windows detected"
         $WebClient = New-Object System.Net.WebClient
-        $WebClient.DownloadFile("http://b1.download.windowsupdate.com/c/upgr/2023/10/windows11.0-kb5015684-x64_23H2.cab","C:\temp\windows11.0-kb5015684-x64_23H2.cab")
-        $updaterunArguments = '/online /Add-Package /PackagePath:"c:\temp\windows11.0-kb5015684-x64_23H2.cab" /quiet /norestart'
+        $WebClient.DownloadFile("https://catalog.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/e3472ba5-22b6-46d5-8de2-db78395b3209/public/windows11.0-kb5031455-x64_d1c3bafaa9abd8c65f0354e2ea89f35470b10b65.msu", "C:\temp\windows11.0-kb5031455-x64_23H2.msu")
+        $updaterunArguments = '/online /Add-Package /PackagePath:"C:\temp\windows11.0-kb5031455-x64_23H2.msu" /quiet /norestart'
     }
     else 
     {
         "32-bit Windows detected (rare for Windows 11)"
-        $WebClient = New-Object System.Net.WebClient
-        $WebClient.DownloadFile("http://b1.download.windowsupdate.com/c/upgr/2023/10/windows11.0-kb5015684-x86_23H2.cab","C:\temp\windows11.0-kb5015684-x86_23H2.cab")
-        $updaterunArguments = '/online /Add-Package /PackagePath:"C:\temp\windows11.0-kb5015684-x86_23H2.cab" /quiet /norestart'
+        # Adjust this part only if needed, but it's unlikely for Windows 11 to run on 32-bit.
     }
     
     $updaterunProcessCfg = New-Object System.Diagnostics.ProcessStartInfo
