@@ -1,5 +1,5 @@
 ### WINDOWS 11 23H2 Silent Upgrade
-### UPDATED ON : OCTOBER 18 2024
+### UPDATED ON : OCTOBER 21 2024
 
 $proceed=$false
 $osversion = Get-WMIObject win32_operatingsystem
