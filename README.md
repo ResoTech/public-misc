@@ -15,3 +15,7 @@ Powershell.exe -EP Unrestricted iwr "https://raw.githubusercontent.com/ResoTech/
 
 # Resolve Defender
 Powershell.exe -EP Unrestricted iwr "https://raw.githubusercontent.com/ResoTech/public-misc/main/ResolveDefender.ps1" -o ResolveDefender.ps1";.\ResolveDefender.ps1
+
+# Bluebeam Update Script 
+## Bypass GPO and Winget updates script limitations
+Powershell.exe -EP Unrestricted iwr "https://raw.githubusercontent.com/ResoTech/public-misc/refs/heads/main/bluebeamUpdates.ps1" -o bluebeamUpdates.ps1";.\bluebeamUpdates.ps1
